@@ -16,7 +16,8 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
-#include <cstring>
+#include "Client.h"
+#include "ClientCommunicator.h"
 
 using namespace std;
 
@@ -25,69 +26,10 @@ using namespace std;
 #define MAX_FDS 200
 #define LISTEN_QUEUE_SIZE 32
 
+
 struct client_t_data {
-    pollfd * client_fd;
+    Client * client;
 };
-
-
-int receive_int(int socket, int * result) {
-    int temp;
-    *result = 0;
-    int got, left = sizeof(int);
-    while ((got = read(socket, &temp, left)) > 0) {
-        left -= got;
-        *result += temp;
-        if (left <= 0) break;
-    }
-    *result = ntohl(*result);
-    return got;
-}
-
-int receive_text(int socket, string * text) {
-    int length, result = receive_int(socket, &length);
-    if (result < 0) {
-        perror("odczyt inta sie nie udal");
-        return result;
-    }
-    else if (result == 0) {
-        return result;
-    }
-    int got, buffer_size = 20;
-    int all = 0;
-    char buffer[buffer_size];
-    while ((got = read(socket, buffer, min(buffer_size - 1, length - all))) > 0) {
-        buffer[got] = '\0';
-        *text += buffer;
-        all += got;
-        if (all >= length) break;
-    }
-    return got;
-}
-
-int send_buffer(int socket, char * buffer, int length) {
-    int sent, left = length;
-    while ((sent = write(socket, buffer + (length - left), left)) > 0) {
-        left -= sent;
-        if (left <= 0) break;
-    }
-    return sent;
-}
-
-int send_int(int socket, int number) {
-    number = htonl(number);
-    char * buffer = new char[sizeof(int)]();
-    for (int i = 0; i < sizeof(int); i++) {
-        buffer[i] = (number >> (i * 8)) & 0xFF;
-    }
-    return send_buffer(socket, buffer, sizeof(int));
-}
-
-int send_text(int socket, string text, int length) {
-    send_int(socket, length);
-    char * buffer = new char[length]();
-    strncpy(buffer, text.c_str(), length);
-    return send_buffer(socket, buffer, length);
-}
 
 void close_connection(pollfd * client_fd) {
     cout << "closing connection..." << endl;
@@ -97,42 +39,17 @@ void close_connection(pollfd * client_fd) {
 
 void * handle_client_message(void * arg) {
     client_t_data * t_data = (client_t_data *) arg;
-    pollfd * client_fd = (*t_data).client_fd;
-    string text = "";
-    int res = receive_text(client_fd->fd, &text);
-    int close_conn = 0;
-    if (res < 0) {
-        perror("read() failed");
-        close_conn = 1;
-    }
-    else if (res == 0) {
-        close_conn = 1;
-    }
-    else {
-        cout << "odczytano tekst: " << text << endl;
+    Client * client = (*t_data).client;
 
-        text = "Gna hiena i jenot krokiem lunatyka";
-        res = send_text(client_fd->fd, text, text.size());
-        if (res < 0) {
-            perror("read() failed");
-            close_conn = 1;
-        }
-        else if (res == 0) {
-            close_conn = 1;
-        }
-        else {
-            cout << "wyslano tekst: " << text << endl;
-        }
-    }
+    ClientCommunicator * clientCommunicator = new ClientCommunicator(client);
+    clientCommunicator->handle_client_communicate();
 
-    if (close_conn)
-        close_connection(client_fd);
-    client_fd->events = POLLIN;
+    client->client_fd->events = POLLIN;
 }
 
 struct pollfd fds[MAX_FDS];
 int nfds = 1;
-int values[MAX_FDS];
+Client * clients[MAX_FDS];
 
 int main(int argc, char *argv[]) {
     short server_port = SERVER_PORT;
@@ -206,7 +123,7 @@ int main(int argc, char *argv[]) {
             fds[nfds].fd = new_desc;
             fds[nfds].events = POLLIN;
             fds[nfds].revents = 0;
-            values[nfds] = 0;
+            clients[nfds] = new Client(&fds[nfds]);
             nfds++;
         }
 
@@ -217,7 +134,7 @@ int main(int argc, char *argv[]) {
             }
             else if (fds[i].revents & POLLIN) {
                 client_t_data t_data = {};
-                t_data.client_fd = &fds[i];
+                t_data.client = clients[i];
                 fds[i].events = 0;
                 pthread_t t;
                 pthread_create(&t, nullptr, handle_client_message, (void *) &t_data);
@@ -230,7 +147,7 @@ int main(int argc, char *argv[]) {
             if (fds[i].fd < 0)
                 continue;
             fds[nfds] = fds[i];
-            values[nfds] = values[i];
+            clients[nfds] = clients[i];
             nfds++;
         }
     }
