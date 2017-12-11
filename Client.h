@@ -1,0 +1,10 @@
+#ifndef SABOTEUR_SERVER_CLIENT_H
+#define SABOTEUR_SERVER_CLIENT_H
+
+
+class Client {
+
+};
+
+
+#endif //SABOTEUR_SERVER_CLIENT_H

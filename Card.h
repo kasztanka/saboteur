@@ -1,0 +1,10 @@
+#ifndef SABOTEUR_SERVER_CARD_H
+#define SABOTEUR_SERVER_CARD_H
+
+
+class Card {
+
+};
+
+
+#endif //SABOTEUR_SERVER_CARD_H

@@ -1,0 +1,10 @@
+#ifndef SABOTEUR_SERVER_BOARD_H
+#define SABOTEUR_SERVER_BOARD_H
+
+
+class Board {
+
+};
+
+
+#endif //SABOTEUR_SERVER_BOARD_H
