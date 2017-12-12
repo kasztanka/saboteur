@@ -29,25 +29,23 @@ using namespace std;
 
 struct client_t_data {
     Client * client;
+    pollfd * client_fd;
 };
-
-void close_connection(pollfd * client_fd) {
-    cout << "closing connection..." << endl;
-    close(client_fd->fd);
-    client_fd->fd *= -1;
-}
 
 void * handle_client_message(void * arg) {
     client_t_data * t_data = (client_t_data *) arg;
     Client * client = (*t_data).client;
+    pollfd * client_fd = (*t_data).client_fd;
 
     ClientCommunicator * clientCommunicator = new ClientCommunicator(client);
-    clientCommunicator->handle_client_communicate();
+    clientCommunicator->handle_client_message();
 
     client->client_fd->events = POLLIN;
+    client_fd->events = POLLIN;
 }
 
 struct pollfd fds[MAX_FDS];
+struct pollfd * fds_pointers[MAX_FDS];
 int nfds = 1;
 Client * clients[MAX_FDS];
 
@@ -101,6 +99,8 @@ int main(int argc, char *argv[]) {
     fds[0].events = POLLIN;
 
     while (true) {
+
+
         rc = poll(fds, nfds, POLL_TIMEOUT);
 
         if (rc < 0) {
@@ -120,21 +120,25 @@ int main(int argc, char *argv[]) {
                 break;
             }
             cout << "new connection accepted..." << endl;
-            fds[nfds].fd = new_desc;
-            fds[nfds].events = POLLIN;
-            fds[nfds].revents = 0;
-            clients[nfds] = new Client(&fds[nfds]);
+            fds_pointers[nfds] = new pollfd();
+            (*fds_pointers[nfds]).fd = new_desc;
+            (*fds_pointers[nfds]).events = POLLIN;
+            (*fds_pointers[nfds]).revents = 0;
+            clients[nfds] = new Client(fds_pointers[nfds]);
+            fds[nfds] = *(clients[nfds]->client_fd);
             nfds++;
         }
 
         for (int i = 1; i < nfds; i++) {
             if (fds[i].revents & POLLERR) {
-                cout << "socket error, closing connection..." << endl;
-                close_connection(&fds[i]);
+                cout << "socket error" << endl;
+                clients[i]->close_connection();
             }
             else if (fds[i].revents & POLLIN) {
                 client_t_data t_data = {};
                 t_data.client = clients[i];
+                t_data.client_fd = &fds[i];
+                clients[i]->client_fd->events = 0;
                 fds[i].events = 0;
                 pthread_t t;
                 pthread_create(&t, nullptr, handle_client_message, (void *) &t_data);
@@ -144,10 +148,12 @@ int main(int argc, char *argv[]) {
         int n = nfds;
         nfds = 1;
         for (int i = 1; i < n; i++) {
-            if (fds[i].fd < 0)
+            clients[i]->pollfd_mutex.lock();
+            if (clients[i]->client_fd->fd < 0)
                 continue;
-            fds[nfds] = fds[i];
+            fds[nfds] = *(clients[i]->client_fd);
             clients[nfds] = clients[i];
+            clients[i]->pollfd_mutex.unlock();
             nfds++;
         }
     }
