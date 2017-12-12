@@ -48,6 +48,7 @@ struct pollfd fds[MAX_FDS];
 struct pollfd * fds_pointers[MAX_FDS];
 int nfds = 1;
 Client * clients[MAX_FDS];
+Game * game = new Game();
 
 int main(int argc, char *argv[]) {
     short server_port = SERVER_PORT;
@@ -126,6 +127,8 @@ int main(int argc, char *argv[]) {
             (*fds_pointers[nfds]).revents = 0;
             clients[nfds] = new Client(fds_pointers[nfds]);
             fds[nfds] = *(clients[nfds]->client_fd);
+            game->players.push_back(clients[nfds]);
+            clients[nfds]->game = game;
             nfds++;
         }
 
@@ -149,12 +152,12 @@ int main(int argc, char *argv[]) {
         nfds = 1;
         for (int i = 1; i < n; i++) {
             clients[i]->pollfd_mutex.lock();
-            if (clients[i]->client_fd->fd < 0)
-                continue;
-            fds[nfds] = *(clients[i]->client_fd);
-            clients[nfds] = clients[i];
+            if (clients[i]->client_fd->fd >= 0) {
+                fds[nfds] = *(clients[i]->client_fd);
+                clients[nfds] = clients[i];
+                nfds++;
+            }
             clients[i]->pollfd_mutex.unlock();
-            nfds++;
         }
     }
 

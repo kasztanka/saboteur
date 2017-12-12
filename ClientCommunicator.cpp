@@ -34,10 +34,12 @@ int ClientCommunicator::receive_int(Client * client) {
     int got, left = sizeof(int);
 
     client->pollfd_mutex.lock();
-    while ((got = read(client->client_fd->fd, &temp, left)) > 0) {
-        left -= got;
-        result += temp;
-        if (left <= 0) break;
+    if (client->active) {
+        while ((got = read(client->client_fd->fd, &temp, left)) > 0) {
+            left -= got;
+            result += temp;
+            if (left <= 0) break;
+        }
     }
     client->pollfd_mutex.unlock();
 
@@ -55,11 +57,13 @@ string ClientCommunicator::receive_text(Client * client) {
     string text = "";
 
     client->pollfd_mutex.lock();
-    while ((got = read(client->client_fd->fd, buffer, min(buffer_size - 1, length - all))) > 0) {
-        buffer[got] = '\0';
-        text += buffer;
-        all += got;
-        if (all >= length) break;
+    if (client->active) {
+        while ((got = read(client->client_fd->fd, buffer, min(buffer_size - 1, length - all))) > 0) {
+            buffer[got] = '\0';
+            text += buffer;
+            all += got;
+            if (all >= length) break;
+        }
     }
     client->pollfd_mutex.unlock();
 
@@ -70,11 +74,12 @@ string ClientCommunicator::receive_text(Client * client) {
 
 void ClientCommunicator::send_buffer(Client * client, char * buffer, int length) {
     int sent, left = length;
-
     client->pollfd_mutex.lock();
-    while ((sent = write(client->client_fd->fd, buffer + (length - left), left)) > 0) {
-        left -= sent;
-        if (left <= 0) break;
+    if (client->active) {
+        while ((sent = write(client->client_fd->fd, buffer + (length - left), left)) > 0) {
+            left -= sent;
+            if (left <= 0) break;
+        }
     }
     client->pollfd_mutex.unlock();
 
@@ -98,10 +103,43 @@ void ClientCommunicator::send_text(Client * client, string text, int length) {
     send_buffer(client, buffer, length);
 }
 
+void ClientCommunicator::send_int_to_all(vector <Client *> recipients, int number) {
+    bool close_conn;
+    for (auto &recipient : recipients) {
+        close_conn = false;
+        try {
+            send_int(recipient, number);
+        } catch (ConnectionClosedException &e) {
+            close_conn = true;
+        } catch (ConnectionBrokenException &e) {
+            cout << "read() failed" << endl;
+            close_conn = true;
+        }
+        if (close_conn)
+            recipient->close_connection();
+    }
+}
+
+void ClientCommunicator::send_text_to_all(vector <Client *> recipients, string text, int length) {
+    bool close_conn;
+    for (auto &recipient : recipients) {
+        close_conn = false;
+        try {
+            send_text(recipient, text, length);
+        } catch (ConnectionClosedException &e) {
+            close_conn = true;
+        } catch (ConnectionBrokenException &e) {
+            cout << "read() failed" << endl;
+            close_conn = true;
+        }
+        if (close_conn)
+            recipient->close_connection();
+    }
+}
+
 void ClientCommunicator::handle_chat_message() {
     string chat_message = receive_text(client);
-    sleep(5);
     cout << "Sending message: " << chat_message << endl;
-    send_int(client, ClientCommunicator::CHAT_MESSAGE);
-    send_text(client, chat_message, chat_message.size());
+    send_int_to_all(client->game->players, ClientCommunicator::CHAT_MESSAGE);
+    send_text_to_all(client->game->players, chat_message, chat_message.size());
 }

@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <exception>
 #include <arpa/inet.h>
+#include<vector>
 #include "Client.h"
 
 class ClientCommunicator {
@@ -24,6 +25,8 @@ private:
     void send_buffer(Client * client, char * buffer, int length);
     void send_int(Client * client, int number);
     void send_text(Client * client, string text, int length);
+    void send_int_to_all(vector <Client *> recipients, int number);
+    void send_text_to_all(vector <Client *> recipients, string text, int length);
     void handle_chat_message();
 
 };

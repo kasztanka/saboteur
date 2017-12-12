@@ -6,6 +6,7 @@
 #include <mutex>
 #include <unistd.h>
 #include <iostream>
+#include "Game.h"
 using namespace std;
 
 class Client {
@@ -14,6 +15,7 @@ public:
     mutex pollfd_mutex;
     bool active;
     string username;
+    Game * game;
     Client(pollfd * client_fd);
     void close_connection();
 };
