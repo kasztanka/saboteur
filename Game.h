@@ -9,7 +9,7 @@
 using namespace std;
 
 
-class SaboteurGame {
+class Game {
     private:
         vector<Client *> players;
         vector<Card *> pile_of_cards;
@@ -17,7 +17,7 @@ class SaboteurGame {
         Board * game_board;
         void prepare_deck();
     public:
-        SaboteurGame();
+        Game();
         Card * draw_card();
 };
 
