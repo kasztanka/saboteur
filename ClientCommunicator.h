@@ -12,12 +12,17 @@
 class ClientCommunicator {
 public:
     Client * client;
+    vector<Game *> * games;
 
     enum Code {
-        CHAT_MESSAGE = 1,
+        INCORRECT_ACTION = -1,
+        CREATE_ROOM = 1,
+        JOIN_ROOM,
+        ADD_PLAYER,
+        CHAT_MESSAGE,
     };
 
-    explicit ClientCommunicator(Client *);
+    explicit ClientCommunicator(Client *, vector<Game *> * games);
     void handle_client_message();
 private:
     int receive_int(Client * client);
@@ -28,6 +33,11 @@ private:
     void send_int_to_all(vector <Client *> recipients, int number);
     void send_text_to_all(vector <Client *> recipients, string text, int length);
     void handle_chat_message();
+    void create_room();
+    void join_room();
+    void receive_username();
+    void send_players(Game * game);
+    void send_new_player_to_others(Game * game);
 
 };
 

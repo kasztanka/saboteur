@@ -16,6 +16,7 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <vector>
 #include "Client.h"
 #include "ClientCommunicator.h"
 
@@ -30,14 +31,16 @@ using namespace std;
 struct client_t_data {
     Client * client;
     pollfd * client_fd;
+    vector<Game *> * games;
 };
 
 void * handle_client_message(void * arg) {
     client_t_data * t_data = (client_t_data *) arg;
     Client * client = (*t_data).client;
     pollfd * client_fd = (*t_data).client_fd;
+    vector<Game *> * games = (*t_data).games;
 
-    ClientCommunicator * clientCommunicator = new ClientCommunicator(client);
+    ClientCommunicator * clientCommunicator = new ClientCommunicator(client, games);
     clientCommunicator->handle_client_message();
 
     client->client_fd->events = POLLIN;
@@ -48,7 +51,7 @@ struct pollfd fds[MAX_FDS];
 struct pollfd * fds_pointers[MAX_FDS];
 int nfds = 1;
 Client * clients[MAX_FDS];
-Game * game = new Game();
+vector<Game *> games;
 
 int main(int argc, char *argv[]) {
     short server_port = SERVER_PORT;
@@ -127,8 +130,6 @@ int main(int argc, char *argv[]) {
             (*fds_pointers[nfds]).revents = 0;
             clients[nfds] = new Client(fds_pointers[nfds]);
             fds[nfds] = *(clients[nfds]->client_fd);
-            game->players.push_back(clients[nfds]);
-            clients[nfds]->game = game;
             nfds++;
         }
 
@@ -141,6 +142,7 @@ int main(int argc, char *argv[]) {
                 client_t_data t_data = {};
                 t_data.client = clients[i];
                 t_data.client_fd = &fds[i];
+                t_data.games = &games;
                 clients[i]->client_fd->events = 0;
                 fds[i].events = 0;
                 pthread_t t;

@@ -2,7 +2,8 @@
 #include <algorithm>
 
 
-Game::Game() {
+Game::Game(string name) {
+    this->name = name;
     prepare_deck();
 }
 

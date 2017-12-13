@@ -3,8 +3,9 @@
 struct ConnectionBrokenException : public exception {};
 struct ConnectionClosedException : public exception {};
 
-ClientCommunicator::ClientCommunicator(Client * client) {
+ClientCommunicator::ClientCommunicator(Client * client, vector<Game *> * games) {
     this->client = client;
+    this->games = games;
 }
 
 void ClientCommunicator::handle_client_message() {
@@ -12,6 +13,13 @@ void ClientCommunicator::handle_client_message() {
     try {
         int message = receive_int(client);
         switch (message) {
+            case ClientCommunicator::CREATE_ROOM:
+                create_room();
+                break;
+            case ClientCommunicator::JOIN_ROOM:
+                cout << "Join room" << endl;
+                join_room();
+                break;
             case ClientCommunicator::CHAT_MESSAGE:
                 handle_chat_message();
                 break;
@@ -142,4 +150,47 @@ void ClientCommunicator::handle_chat_message() {
     cout << "Sending message: " << chat_message << endl;
     send_int_to_all(client->game->players, ClientCommunicator::CHAT_MESSAGE);
     send_text_to_all(client->game->players, chat_message, chat_message.size());
+}
+
+void ClientCommunicator::create_room() {
+    receive_username();
+    string gameName = receive_text(client);
+    Game * game = new Game(gameName);
+    client->game = game;
+    game->players.push_back(client);
+    games->push_back(game);
+    send_players(game);
+}
+
+void ClientCommunicator::join_room() {
+    receive_username();
+    int gameNumber = receive_int(client);
+    cout << games->size() << endl;
+    Game * game = games->at(gameNumber);
+    client->game = game;
+    game->players.push_back(client);
+    send_players(game);
+    send_new_player_to_others(game);
+}
+
+void ClientCommunicator::receive_username() {
+    string username = receive_text(client);
+    client->username = username;
+}
+
+void ClientCommunicator::send_players(Game * game) {
+    for (auto &player: game->players) {
+        send_int(client, ClientCommunicator::ADD_PLAYER);
+        send_text(client, player->username, player->username.size());
+        cout << "wyslano " << player->username << " do " << client->username << endl;
+    }
+}
+
+void ClientCommunicator::send_new_player_to_others(Game * game) {
+    for (auto &player: game->players) {
+        if (player != client) {
+            send_int(player, ClientCommunicator::ADD_PLAYER);
+            send_text(player, client->username, client->username.size());
+        }
+    }
 }

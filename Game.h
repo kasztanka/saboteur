@@ -17,7 +17,8 @@ private:
     void prepare_deck();
 public:
     vector<Client *> players;
-    Game();
+    string name;
+    Game(string name);
     Card * draw_card();
 };
 
