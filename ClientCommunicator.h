@@ -40,6 +40,8 @@ private:
     void send_players(Game * game);
     void send_new_player_to_others(Game * game);
     void send_games();
+    bool username_repeated(Game * game, string username);
+    void send_error_message(Client * client, string error_message);
 
 };
 
