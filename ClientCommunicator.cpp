@@ -168,12 +168,16 @@ void ClientCommunicator::create_room() {
 void ClientCommunicator::join_room() {
     receive_username();
     int gameNumber = receive_int(client);
-    cout << games->size() << endl;
     Game * game = games->at(gameNumber);
-    client->game = game;
-    game->players.push_back(client);
-    send_players(game);
-    send_new_player_to_others(game);
+    if (username_repeated(game, client->username)) {
+        send_error_message(client, "W tym pokoju istnieje juz gracz o takiej nazwie.");
+    }
+    else {
+        client->game = game;
+        game->players.push_back(client);
+        send_players(game);
+        send_new_player_to_others(game);
+    }
 }
 
 void ClientCommunicator::receive_username() {
@@ -185,7 +189,6 @@ void ClientCommunicator::send_players(Game * game) {
     for (auto &player: game->players) {
         send_int(client, ClientCommunicator::ADD_PLAYER);
         send_text(client, player->username, player->username.size());
-        cout << "wyslano " << player->username << " do " << client->username << endl;
     }
 }
 
@@ -204,4 +207,20 @@ void ClientCommunicator::send_games() {
     for (auto &game: *games) {
         send_text(client, game->name, game->name.size());
     }
+}
+
+bool ClientCommunicator::username_repeated(Game *game, string username) {
+    bool repeated = false;
+    for (auto &player: game->players) {
+        if (player->username.compare(username) == 0) {
+            repeated = true;
+            break;
+        }
+    }
+    return repeated;
+}
+
+void ClientCommunicator::send_error_message(Client * client, string error_message) {
+    send_int(client, ClientCommunicator::INCORRECT_ACTION);
+    send_text(client, error_message, error_message.size());
 }
