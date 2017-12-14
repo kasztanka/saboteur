@@ -14,8 +14,9 @@ public:
     Client * client;
     vector<Game *> * games;
 
-    enum Code {
+    enum MessageCode {
         INCORRECT_ACTION = -1,
+        REQUEST_GAMES = 0,
         CREATE_ROOM = 1,
         JOIN_ROOM,
         ADD_PLAYER,
@@ -38,6 +39,7 @@ private:
     void receive_username();
     void send_players(Game * game);
     void send_new_player_to_others(Game * game);
+    void send_games();
 
 };
 

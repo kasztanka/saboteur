@@ -13,6 +13,9 @@ void ClientCommunicator::handle_client_message() {
     try {
         int message = receive_int(client);
         switch (message) {
+            case ClientCommunicator::REQUEST_GAMES:
+                send_games();
+                break;
             case ClientCommunicator::CREATE_ROOM:
                 create_room();
                 break;
@@ -192,5 +195,13 @@ void ClientCommunicator::send_new_player_to_others(Game * game) {
             send_int(player, ClientCommunicator::ADD_PLAYER);
             send_text(player, client->username, client->username.size());
         }
+    }
+}
+
+void ClientCommunicator::send_games() {
+    send_int(client, ClientCommunicator::REQUEST_GAMES);
+    send_int(client, (*games).size());
+    for (auto &game: *games) {
+        send_text(client, game->name, game->name.size());
     }
 }
