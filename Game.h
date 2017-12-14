@@ -15,10 +15,11 @@ private:
     Client * active_player;
     Board * game_board;
     void prepare_deck();
+    void add_card_to_deck(string, int);
 public:
     vector<Client *> players;
     string name;
-    Game(string name);
+    Game(string);
     Card * draw_card();
 };
 

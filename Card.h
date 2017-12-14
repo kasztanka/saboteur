@@ -6,14 +6,15 @@ using namespace std;
 
 
 class Card {
-
+public:
+    string name;
+    explicit Card(string);
 };
 
 class TunnelCard: public Card {
 public:
-    TunnelCard(string name, bool up, bool down, bool left, bool right, bool mid);
     bool up, down, left, right, mid;
-    string name;
+    explicit TunnelCard(string);
 };
 
 

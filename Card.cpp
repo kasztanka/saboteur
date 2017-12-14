@@ -1,17 +1,14 @@
 #include "Card.h"
-#include <string>
-using namespace std;
 
-TunnelCard::TunnelCard(string name,
-                       bool up,
-                       bool down,
-                       bool left,
-                       bool right,
-                       bool mid) {
+
+Card::Card(string name) {
     this->name = name;
-    this->up = up;
-    this->down = down;
-    this->left = left;
-    this->right = right;
-    this->mid = mid;
+}
+
+TunnelCard::TunnelCard(string name) : Card(name) {
+    up = (name.find('U') != string::npos);
+    down = (name.find('D') != string::npos);
+    left = (name.find('L') != string::npos);
+    right = (name.find('R') != string::npos);
+    mid = (name.find('M') != string::npos);
 }
