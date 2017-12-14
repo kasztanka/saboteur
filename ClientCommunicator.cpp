@@ -177,6 +177,10 @@ void ClientCommunicator::join_room() {
         game->players.push_back(client);
         send_players(game);
         send_new_player_to_others(game);
+        if (game->players.size() == game->room_size) {
+            send_int_to_all(game->players, ClientCommunicator::START_GAME);
+            send_player_activation(game, (game->players).at(0)->username);
+        }
     }
 }
 
@@ -223,4 +227,9 @@ bool ClientCommunicator::username_repeated(Game *game, string username) {
 void ClientCommunicator::send_error_message(Client * client, string error_message) {
     send_int(client, ClientCommunicator::INCORRECT_ACTION);
     send_text(client, error_message, error_message.size());
+}
+
+void ClientCommunicator::send_player_activation(Game * game, string username) {
+    send_int_to_all(game->players, ClientCommunicator::ACTIVATE_PLAYER);
+    send_text_to_all(game->players, username, username.size());
 }

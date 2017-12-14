@@ -2,6 +2,8 @@
 #define SABOTEUR_SERVER_GAME_H
 
 #include <vector>
+#include <algorithm>
+#include <random>
 #include "Card.h"
 #include "Board.h"
 
@@ -18,6 +20,7 @@ private:
     void add_card_to_deck(string, int);
 public:
     vector<Client *> players;
+    int room_size;
     string name;
     Game(string);
     Card * draw_card();

@@ -1,9 +1,9 @@
 #include "Game.h"
-#include <algorithm>
 
 
 Game::Game(string name) {
     this->name = name;
+    this->room_size = 2;
     prepare_deck();
 }
 

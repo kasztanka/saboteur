@@ -16,11 +16,13 @@ public:
 
     enum MessageCode {
         INCORRECT_ACTION = -1,
-        REQUEST_GAMES = 0,
-        CREATE_ROOM = 1,
+        REQUEST_GAMES,
+        CREATE_ROOM,
         JOIN_ROOM,
         ADD_PLAYER,
         CHAT_MESSAGE,
+        START_GAME,
+        ACTIVATE_PLAYER,
     };
 
     explicit ClientCommunicator(Client *, vector<Game *> * games);
@@ -42,6 +44,7 @@ private:
     void send_games();
     bool username_repeated(Game * game, string username);
     void send_error_message(Client * client, string error_message);
+    void send_player_activation(Game * game, string username);
 
 };
 
