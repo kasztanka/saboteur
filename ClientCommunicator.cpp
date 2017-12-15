@@ -26,6 +26,8 @@ void ClientCommunicator::handle_client_message() {
             case ClientCommunicator::CHAT_MESSAGE:
                 handle_chat_message();
                 break;
+            case ClientCommunicator::DRAW_CARD:
+                send_card_to_hand();
             default:
                 break;
         }
@@ -179,7 +181,8 @@ void ClientCommunicator::join_room() {
         send_new_player_to_others(game);
         if (game->players.size() == game->room_size) {
             send_int_to_all(game->players, ClientCommunicator::START_GAME);
-            send_player_activation(game, (game->players).at(0)->username);
+            game->activate_first();
+            send_player_activation(game);
         }
     }
 }
@@ -229,7 +232,22 @@ void ClientCommunicator::send_error_message(Client * client, string error_messag
     send_text(client, error_message, error_message.size());
 }
 
-void ClientCommunicator::send_player_activation(Game * game, string username) {
+void ClientCommunicator::send_player_activation(Game * game) {
     send_int_to_all(game->players, ClientCommunicator::ACTIVATE_PLAYER);
+    string username = game->get_active_player_username();
     send_text_to_all(game->players, username, username.size());
+}
+
+void ClientCommunicator::send_card_to_hand() {
+    Game * game = client->game;
+    if (!game->is_active_player(client)) {
+        send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
+    } else if (game->has_empty_pile()) {
+        send_error_message(client, "Karty sie skonczyly");
+    } else {
+        send_int(client, ClientCommunicator::DRAW_CARD);
+        Card * card = game->draw_card();
+        send_int(client, card->type);
+        send_text(client, card->name, card->name.size());
+    }
 }

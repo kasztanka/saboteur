@@ -1,11 +1,12 @@
 #include "Card.h"
 
 
-Card::Card(string name) {
+Card::Card(string name, int type) {
     this->name = name;
+    this->type = type;
 }
 
-TunnelCard::TunnelCard(string name) : Card(name) {
+TunnelCard::TunnelCard(string name, int type) : Card(name, type) {
     up = (name.find('U') != string::npos);
     down = (name.find('D') != string::npos);
     left = (name.find('L') != string::npos);

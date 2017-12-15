@@ -23,6 +23,7 @@ public:
         CHAT_MESSAGE,
         START_GAME,
         ACTIVATE_PLAYER,
+        DRAW_CARD,
     };
 
     explicit ClientCommunicator(Client *, vector<Game *> * games);
@@ -44,8 +45,8 @@ private:
     void send_games();
     bool username_repeated(Game * game, string username);
     void send_error_message(Client * client, string error_message);
-    void send_player_activation(Game * game, string username);
-
+    void send_player_activation(Game * game);
+    void send_card_to_hand();
 };
 
 

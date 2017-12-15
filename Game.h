@@ -9,7 +9,9 @@
 
 using namespace std;
 
+
 class Client;
+
 
 class Game {
 private:
@@ -24,6 +26,10 @@ public:
     string name;
     Game(string);
     Card * draw_card();
+    void activate_first();
+    string get_active_player_username();
+    bool is_active_player(Client * client);
+    bool has_empty_pile();
 };
 
 

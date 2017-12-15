@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Client.h"
 
 
 Game::Game(string name) {
@@ -15,7 +16,7 @@ Card * Game::draw_card() {
 
 void Game::add_card_to_deck(string name, int quantity) {
     for (int i = 0; i < quantity; i++)
-        pile_of_cards.push_back(new Card(name));
+        pile_of_cards.push_back(new TunnelCard(name, Card::TUNNEL));
 }
 
 void Game::prepare_deck() {
@@ -24,4 +25,20 @@ void Game::prepare_deck() {
     random_device rd;
     mt19937 g(rd());
     shuffle(pile_of_cards.begin(), pile_of_cards.end(), g);
+}
+
+void Game::activate_first() {
+    active_player = players.at(0);
+}
+
+string Game::get_active_player_username() {
+    return active_player->username;
+}
+
+bool Game::is_active_player(Client * client) {
+    return active_player == client;
+}
+
+bool Game::has_empty_pile() {
+    return pile_of_cards.size() == 0;
 }

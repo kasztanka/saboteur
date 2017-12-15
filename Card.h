@@ -8,13 +8,20 @@ using namespace std;
 class Card {
 public:
     string name;
-    explicit Card(string);
+    int type;
+    explicit Card(string, int);
+
+    enum CardType {
+        TUNNEL = 0,
+        BLOCK = 1,
+        HEAL = 2
+    };
 };
 
 class TunnelCard: public Card {
 public:
     bool up, down, left, right, mid;
-    explicit TunnelCard(string);
+    explicit TunnelCard(string, int);
 };
 
 
