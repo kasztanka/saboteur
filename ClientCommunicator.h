@@ -24,6 +24,7 @@ public:
         START_GAME,
         ACTIVATE_PLAYER,
         DRAW_CARD,
+        CLOSE_CONNECTION,
     };
 
     explicit ClientCommunicator(Client *, vector<Game *> * games);

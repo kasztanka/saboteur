@@ -28,6 +28,8 @@ void ClientCommunicator::handle_client_message() {
                 break;
             case ClientCommunicator::DRAW_CARD:
                 send_card_to_hand();
+            case ClientCommunicator::CLOSE_CONNECTION:
+                send_int(client, ClientCommunicator::CLOSE_CONNECTION);
             default:
                 break;
         }
