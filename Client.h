@@ -7,9 +7,16 @@
 #include <unistd.h>
 #include <iostream>
 #include "Game.h"
+
 using namespace std;
 
+
+struct NoCardException : public exception {};
+
+
 class Client {
+private:
+    vector<Card *> hand_cards;
 public:
     pollfd * client_fd;
     mutex pollfd_mutex;
@@ -17,6 +24,9 @@ public:
     string username;
     Game * game;
     Client(pollfd * client_fd);
+    void addCard(Card *);
+    Card * getCardByIndex(int);
+    void removeCardByIndex(int);
     void close_connection();
 };
 

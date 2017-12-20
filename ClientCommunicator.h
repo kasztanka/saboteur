@@ -9,6 +9,11 @@
 #include<vector>
 #include "Client.h"
 
+
+struct ConnectionBrokenException : public exception {};
+struct ConnectionClosedException : public exception {};
+
+
 class ClientCommunicator {
 public:
     Client * client;
@@ -24,6 +29,8 @@ public:
         START_GAME,
         ACTIVATE_PLAYER,
         DRAW_CARD,
+        ADD_CARD_TO_BOARD,
+        REMOVE_CARD_FROM_HAND,
         CLOSE_CONNECTION,
     };
 
@@ -40,6 +47,8 @@ private:
     void handle_chat_message();
     void create_room();
     void join_room();
+    void start_game(Game *);
+    Card * send_card_to_player(Client *, Game *);
     void receive_username();
     void send_players(Game * game);
     void send_new_player_to_others(Game * game);
@@ -48,6 +57,9 @@ private:
     void send_error_message(Client * client, string error_message);
     void send_player_activation(Game * game);
     void send_card_to_hand();
+    void handle_card_to_board();
+    void send_board_card(vector<Client *>, Card *, int, int, bool);
+    void send_used_card(int);
 };
 
 

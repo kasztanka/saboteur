@@ -10,6 +10,9 @@
 using namespace std;
 
 
+struct IncorrectMoveException : public exception {};
+
+
 class Client;
 
 
@@ -24,12 +27,13 @@ public:
     vector<Client *> players;
     int room_size;
     string name;
-    Game(string);
+    explicit Game(string);
     Card * draw_card();
     void activate_first();
     string get_active_player_username();
     bool is_active_player(Client * client);
     bool has_empty_pile();
+    void play_tunnel_card(TunnelCard *, int, int, bool);
 };
 
 

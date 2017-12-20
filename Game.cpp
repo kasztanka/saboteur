@@ -64,5 +64,9 @@ bool Game::is_active_player(Client * client) {
 }
 
 bool Game::has_empty_pile() {
-    return pile_of_cards.size() == 0;
+    return pile_of_cards.empty();
+}
+
+void Game::play_tunnel_card(TunnelCard * card, int x, int y, bool is_rotated) {
+    // TODO: implement int Game and Board
 }

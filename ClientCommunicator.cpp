@@ -1,7 +1,5 @@
 #include "ClientCommunicator.h"
 
-struct ConnectionBrokenException : public exception {};
-struct ConnectionClosedException : public exception {};
 
 ClientCommunicator::ClientCommunicator(Client * client, vector<Game *> * games) {
     this->client = client;
@@ -28,6 +26,9 @@ void ClientCommunicator::handle_client_message() {
                 break;
             case ClientCommunicator::DRAW_CARD:
                 send_card_to_hand();
+                break;
+            case ClientCommunicator::ADD_CARD_TO_BOARD:
+                handle_card_to_board();
                 break;
             case ClientCommunicator::CLOSE_CONNECTION:
                 send_int(client, ClientCommunicator::CLOSE_CONNECTION);
@@ -184,11 +185,30 @@ void ClientCommunicator::join_room() {
         send_players(game);
         send_new_player_to_others(game);
         if (game->players.size() == game->room_size) {
-            send_int_to_all(game->players, ClientCommunicator::START_GAME);
-            game->activate_first();
-            send_player_activation(game);
+            start_game(game);
         }
     }
+}
+
+void ClientCommunicator::start_game(Game * game) {
+    send_int_to_all(game->players, ClientCommunicator::START_GAME);
+    game->activate_first();
+    send_player_activation(game);
+    Card * new_card;
+    for (auto &player: game->players) {
+        for (int i = 0; i < 5; i++) {
+            new_card = send_card_to_player(player, game);
+            player->addCard(new_card);
+        }
+    }
+}
+
+Card * ClientCommunicator::send_card_to_player(Client * player, Game * game) {
+    send_int(player, ClientCommunicator::DRAW_CARD);
+    Card * card = game->draw_card();
+    send_int(player, card->type);
+    send_text(player, card->name, card->name.size());
+    return card;
 }
 
 void ClientCommunicator::receive_username() {
@@ -249,9 +269,44 @@ void ClientCommunicator::send_card_to_hand() {
     } else if (game->has_empty_pile()) {
         send_error_message(client, "Karty sie skonczyly");
     } else {
-        send_int(client, ClientCommunicator::DRAW_CARD);
-        Card * card = game->draw_card();
-        send_int(client, card->type);
-        send_text(client, card->name, card->name.size());
+        send_card_to_player(client, game);
     }
+}
+
+void ClientCommunicator::handle_card_to_board() {
+    int card_index = receive_int(client);
+    int x = receive_int(client);
+    int y = receive_int(client);
+    bool is_rotated = (bool)receive_int(client);
+    Game * game = client->game;
+    if (!game->is_active_player(client)) {
+        send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
+    } else {
+        try {
+            Card * card = client->getCardByIndex(card_index);
+            client->game->play_tunnel_card((TunnelCard *)card, x, y, is_rotated);
+            client->removeCardByIndex(card_index);
+            send_board_card(game->players, card, x, y, is_rotated);
+            send_used_card(card_index);
+        } catch (NoCardException &e) {
+            send_error_message(client, "Nie masz takiej karty");
+        } catch (IncorrectMoveException & e) {
+            send_error_message(client, "Niepoprawny ruch. Sprobuj ponownie");
+        }
+    }
+}
+
+
+void ClientCommunicator::send_board_card(vector<Client *> players, Card * card, int x, int y, bool is_rotated) {
+    send_int_to_all(players, ClientCommunicator::ADD_CARD_TO_BOARD);
+    send_text_to_all(players, card->name, card->name.size());
+    send_int_to_all(players, x);
+    send_int_to_all(players, y);
+    send_int_to_all(players, is_rotated);
+}
+
+
+void ClientCommunicator::send_used_card(int card_index) {
+    send_int(client, ClientCommunicator::REMOVE_CARD_FROM_HAND);
+    send_int(client, card_index);
 }

@@ -1,8 +1,27 @@
 #include "Client.h"
 
+
 Client::Client(pollfd * client_fd) {
     this->client_fd = client_fd;
     this->active = true;
+}
+
+void Client::addCard(Card * new_card) {
+    hand_cards.push_back(new_card);
+}
+
+Card * Client::getCardByIndex(int card_index) {
+    if (hand_cards.size() <= card_index) {
+        throw NoCardException();
+    }
+    return hand_cards.at(card_index);
+}
+
+void Client::removeCardByIndex(int card_index) {
+    if (hand_cards.size() <= card_index) {
+        throw NoCardException();
+    }
+    hand_cards.erase(hand_cards.begin() + card_index);
 }
 
 void Client::close_connection() {
