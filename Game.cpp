@@ -5,6 +5,7 @@
 Game::Game(string name) {
     this->name = name;
     this->room_size = 2;
+    this->game_board = new Board();
     prepare_deck();
 }
 
@@ -67,6 +68,13 @@ bool Game::has_empty_pile() {
     return pile_of_cards.empty();
 }
 
-void Game::play_tunnel_card(TunnelCard * card, int x, int y, bool is_rotated) {
-    // TODO: implement int Game and Board
+void Game::play_tunnel_card(TunnelCard * new_card, int x, int y, bool is_rotated) {
+    if (is_rotated) {
+        new_card->rotate();
+    }
+    if (game_board->validate_tunnel_card(new_card, x, y)) {
+        game_board->set_card(new_card, x, y);
+    } else {
+        throw IncorrectMoveException();
+    }
 }

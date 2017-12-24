@@ -7,9 +7,18 @@ Card::Card(string name, int type) {
 }
 
 TunnelCard::TunnelCard(string name, int type) : Card(name, type) {
-    up = (name.find('U') != string::npos);
-    down = (name.find('D') != string::npos);
-    left = (name.find('L') != string::npos);
-    right = (name.find('R') != string::npos);
-    mid = (name.find('M') != string::npos);
+    directions[UP] = (name.find('U') != string::npos);
+    directions[DOWN] = (name.find('D') != string::npos);
+    directions[LEFT] = (name.find('L') != string::npos);
+    directions[RIGHT] = (name.find('R') != string::npos);
+    directions[MID] = (name.find('M') != string::npos);
+}
+
+void TunnelCard::rotate() {
+    bool tmp = directions[UP];
+    directions[UP] = directions[DOWN];
+    directions[DOWN] = tmp;
+    tmp = directions[LEFT];
+    directions[LEFT] = directions[RIGHT];
+    directions[RIGHT] = tmp;
 }

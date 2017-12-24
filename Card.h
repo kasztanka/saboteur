@@ -20,8 +20,16 @@ public:
 
 class TunnelCard: public Card {
 public:
-    bool up, down, left, right, mid;
+    enum Direction {
+        UP = 0,
+        DOWN,
+        LEFT,
+        RIGHT,
+        MID,
+    };
+    bool directions[5];
     explicit TunnelCard(string, int);
+    void rotate();
 };
 
 

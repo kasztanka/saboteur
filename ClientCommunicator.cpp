@@ -283,8 +283,8 @@ void ClientCommunicator::handle_card_to_board() {
         send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
     } else {
         try {
-            Card * card = client->getCardByIndex(card_index);
-            client->game->play_tunnel_card((TunnelCard *)card, x, y, is_rotated);
+            TunnelCard * card = (TunnelCard *)client->getCardByIndex(card_index);
+            client->game->play_tunnel_card(card, x, y, is_rotated);
             client->removeCardByIndex(card_index);
             send_board_card(game->players, card, x, y, is_rotated);
             send_used_card(card_index);
