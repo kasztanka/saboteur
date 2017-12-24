@@ -4,6 +4,7 @@
 Card::Card(string name, int type) {
     this->name = name;
     this->type = type;
+    is_root = (name.find("start") != string::npos);
 }
 
 TunnelCard::TunnelCard(string name, int type) : Card(name, type) {
@@ -12,6 +13,10 @@ TunnelCard::TunnelCard(string name, int type) : Card(name, type) {
     directions[LEFT] = (name.find('L') != string::npos);
     directions[RIGHT] = (name.find('R') != string::npos);
     directions[MID] = (name.find('M') != string::npos);
+}
+
+GoalCard::GoalCard(string name, int type) : TunnelCard(name, type) {
+    is_gold = (name.find("gold") != string::npos);
 }
 
 void TunnelCard::rotate() {

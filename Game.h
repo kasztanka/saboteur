@@ -22,6 +22,7 @@ private:
     Client * active_player;
     Board * game_board;
     void prepare_deck();
+    void prepare_board();
     void add_card_to_deck(string, int, int);
 public:
     vector<Client *> players;

@@ -9,12 +9,14 @@ class Card {
 public:
     string name;
     int type;
+    bool is_root;
     explicit Card(string, int);
 
     enum CardType {
         TUNNEL = 0,
         BLOCK = 1,
-        HEAL = 2
+        HEAL = 2,
+        GOAL = 3
     };
 };
 
@@ -30,6 +32,12 @@ public:
     bool directions[5];
     explicit TunnelCard(string, int);
     void rotate();
+};
+
+class GoalCard: public TunnelCard {
+public:
+    bool is_gold;
+    explicit GoalCard(string, int);
 };
 
 

@@ -29,9 +29,15 @@ bool Board::new_card_fits_to_neighbour(TunnelCard * neighbour, TunnelCard::Direc
     return neighbour == nullptr || (neighbour->directions[neighbour_wall] == new_card_wall);
 }
 
+bool Board::card_has_connection_to_root(TunnelCard *card, int x, int y) {
+    //TODO: implement bfs or dfs search
+    return true;
+}
+
 bool Board::validate_tunnel_card(TunnelCard * new_card, int x, int y) {
-    return (is_spot_for_new_card_free(x, y) &&
-        new_card_fits_to_neighbours(new_card, x, y));
+    return is_spot_for_new_card_free(x, y) &&
+           new_card_fits_to_neighbours(new_card, x, y) &&
+           card_has_connection_to_root(new_card, x, y);
 }
 
 void Board::set_card(TunnelCard * card, int x, int y) {

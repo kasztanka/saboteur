@@ -7,6 +7,7 @@ Game::Game(string name) {
     this->room_size = 2;
     this->game_board = new Board();
     prepare_deck();
+    prepare_board();
 }
 
 Card * Game::draw_card() {
@@ -50,6 +51,14 @@ void Game::prepare_deck() {
     random_device rd;
     mt19937 g(rd());
     shuffle(pile_of_cards.begin(), pile_of_cards.end(), g);
+}
+
+void Game::prepare_board() {
+    //TODO: Add randomness to initializing goal cards
+    game_board->set_card(new TunnelCard("UDLRM_start", Card::TUNNEL), 0, 2);
+    game_board->set_card(new GoalCard("UDLRM_gold", Card::GOAL), game_board->COLS - 1, 0);
+    game_board->set_card(new GoalCard("ULM_coal", Card::GOAL), game_board->COLS - 1, 2);
+    game_board->set_card(new GoalCard("URM_coal", Card::GOAL), game_board->COLS - 1, 4);
 }
 
 void Game::activate_first() {
