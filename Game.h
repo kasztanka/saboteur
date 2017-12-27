@@ -20,6 +20,7 @@ class Game {
 private:
     vector<Card *> pile_of_cards;
     Client * active_player;
+    int active_player_index;
     Board * game_board;
     void prepare_deck();
     void prepare_board();
@@ -31,6 +32,7 @@ public:
     explicit Game(string);
     Card * draw_card();
     void activate_first();
+    void activate_next();
     string get_active_player_username();
     bool is_active_player(Client * client);
     bool has_empty_pile();

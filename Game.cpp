@@ -62,7 +62,14 @@ void Game::prepare_board() {
 }
 
 void Game::activate_first() {
+    active_player_index = 0;
     active_player = players.at(0);
+}
+
+void Game::activate_next() {
+    active_player_index++;
+    active_player_index %= players.size();
+    active_player = players.at(active_player_index);
 }
 
 string Game::get_active_player_username() {
@@ -83,6 +90,7 @@ void Game::play_tunnel_card(TunnelCard * new_card, int x, int y, bool is_rotated
     }
     if (game_board->validate_tunnel_card(new_card, x, y)) {
         game_board->set_card(new_card, x, y);
+        activate_next();
     } else {
         throw IncorrectMoveException();
     }

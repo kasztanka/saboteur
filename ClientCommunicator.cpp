@@ -288,6 +288,7 @@ void ClientCommunicator::handle_card_to_board() {
             client->removeCardByIndex(card_index);
             send_board_card(game->players, card, x, y, is_rotated);
             send_used_card(card_index);
+            send_player_activation(game);
         } catch (NoCardException &e) {
             send_error_message(client, "Nie masz takiej karty");
         } catch (IncorrectMoveException & e) {
