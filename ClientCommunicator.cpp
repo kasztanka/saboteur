@@ -198,7 +198,6 @@ void ClientCommunicator::start_game(Game * game) {
     for (auto &player: game->players) {
         for (int i = 0; i < 5; i++) {
             new_card = send_card_to_player(player, game);
-            player->addCard(new_card);
         }
     }
 }
@@ -208,6 +207,7 @@ Card * ClientCommunicator::send_card_to_player(Client * player, Game * game) {
     Card * card = game->draw_card();
     send_int(player, card->type);
     send_text(player, card->name, card->name.size());
+    player->addCard(card);
     return card;
 }
 
