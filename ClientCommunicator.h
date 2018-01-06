@@ -45,6 +45,7 @@ private:
     void send_int_to_all(vector <Client *> recipients, int number);
     void send_text_to_all(vector <Client *> recipients, string text, int length);
     void handle_chat_message();
+    void send_chat_message(string);
     void create_room();
     void join_room();
     void start_game(Game *);

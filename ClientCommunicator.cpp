@@ -158,6 +158,10 @@ void ClientCommunicator::send_text_to_all(vector <Client *> recipients, string t
 void ClientCommunicator::handle_chat_message() {
     string chat_message = receive_text(client);
     cout << "Sending message: " << chat_message << endl;
+    send_chat_message(chat_message);
+}
+
+void ClientCommunicator::send_chat_message(string chat_message) {
     send_int_to_all(client->game->players, ClientCommunicator::CHAT_MESSAGE);
     send_text_to_all(client->game->players, chat_message, chat_message.size());
 }
@@ -287,6 +291,9 @@ void ClientCommunicator::handle_card_to_board() {
             send_board_card(game->players, card, x, y, is_rotated);
             send_used_card(card_index);
             send_player_activation(game);
+            if (client->game->is_finished()) {
+                send_chat_message("KONIEC GRY");
+            }
         } catch (NoCardException &e) {
             send_error_message(client, "Nie masz takiej karty");
         } catch (IncorrectMoveException & e) {
