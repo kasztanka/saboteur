@@ -48,7 +48,7 @@ private:
     void create_room();
     void join_room();
     void start_game(Game *);
-    Card * send_card_to_player(Client *, Game *);
+    void send_card_to_player(Client *, Game *);
     void receive_username();
     void send_players(Game * game);
     void send_new_player_to_others(Game * game);
