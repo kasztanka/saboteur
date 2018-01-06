@@ -31,6 +31,8 @@ public:
         DRAW_CARD,
         ADD_CARD_TO_BOARD,
         REMOVE_CARD_FROM_HAND,
+        BLOCK,
+        HEAL,
         CLOSE_CONNECTION,
     };
 
@@ -60,6 +62,9 @@ private:
     void handle_card_to_board();
     void send_board_card(vector<Client *>, Card *, int, int, bool);
     void send_used_card(int);
+    void handle_block_card();
+    void send_block_card(vector<Client *>, BlockCard *, string);
+    void handle_heal_card();
 };
 
 

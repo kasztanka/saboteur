@@ -17,6 +17,7 @@ struct NoCardException : public exception {};
 class Client {
 private:
     vector<Card *> hand_cards;
+    vector<Card::Blockade> blockades;
 public:
     pollfd * client_fd;
     mutex pollfd_mutex;
@@ -27,6 +28,8 @@ public:
     void addCard(Card *);
     Card * getCardByIndex(int);
     void removeCardByIndex(int);
+    bool has_blockade(Card::Blockade);
+    void add_blockade(Card::Blockade);
     void close_connection();
 };
 

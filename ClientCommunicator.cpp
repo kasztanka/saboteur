@@ -30,6 +30,12 @@ void ClientCommunicator::handle_client_message() {
             case ClientCommunicator::ADD_CARD_TO_BOARD:
                 handle_card_to_board();
                 break;
+            case ClientCommunicator::BLOCK:
+                handle_block_card();
+                break;
+            case ClientCommunicator::HEAL:
+                handle_heal_card();
+                break;
             case ClientCommunicator::CLOSE_CONNECTION:
                 send_int(client, ClientCommunicator::CLOSE_CONNECTION);
                 break;
@@ -284,7 +290,7 @@ void ClientCommunicator::handle_card_to_board() {
     } else {
         try {
             TunnelCard * card = (TunnelCard *)client->getCardByIndex(card_index);
-            client->game->play_tunnel_card(card, x, y, is_rotated);
+            game->play_tunnel_card(card, x, y, is_rotated);
             client->removeCardByIndex(card_index);
             send_board_card(game->players, card, x, y, is_rotated);
             send_used_card(card_index);
@@ -310,4 +316,39 @@ void ClientCommunicator::send_board_card(vector<Client *> players, Card * card, 
 void ClientCommunicator::send_used_card(int card_index) {
     send_int(client, ClientCommunicator::REMOVE_CARD_FROM_HAND);
     send_int(client, card_index);
+}
+
+
+void ClientCommunicator::handle_block_card() {
+    int card_index = receive_int(client);
+    int player_index = receive_int(client);
+    Game * game = client->game;
+    if (!game->is_active_player(client)) {
+        send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
+    } else {
+        try {
+            BlockCard * card = (BlockCard *)client->getCardByIndex(card_index);
+            string player_name = game->play_block_card(card, player_index);
+            send_block_card(game->players, card, player_name);
+            client->removeCardByIndex(card_index);
+            send_used_card(card_index);
+            send_player_activation(game);
+        } catch (NoCardException &e) {
+            send_error_message(client, "Nie masz takiej karty");
+        } catch (IncorrectMoveException & e) {
+            send_error_message(client, "Niepoprawny ruch. Sprobuj ponownie");
+        }
+    }
+}
+
+
+void ClientCommunicator::send_block_card(vector<Client *> players, BlockCard * card, string player_name) {
+    send_int_to_all(players, ClientCommunicator::BLOCK);
+    send_int_to_all(players, card->blockade);
+    send_text_to_all(players, player_name, player_name.size());
+}
+
+
+void ClientCommunicator::handle_heal_card() {
+
 }

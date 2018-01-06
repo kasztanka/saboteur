@@ -37,6 +37,7 @@ public:
     bool is_active_player(Client * client);
     bool has_empty_pile();
     void play_tunnel_card(TunnelCard *, int, int, bool);
+    string play_block_card(BlockCard *, int);
 };
 
 

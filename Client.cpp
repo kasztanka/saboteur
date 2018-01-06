@@ -24,6 +24,14 @@ void Client::removeCardByIndex(int card_index) {
     hand_cards.erase(hand_cards.begin() + card_index);
 }
 
+bool Client::has_blockade(Card::Blockade blockade) {
+    return (!blockades.empty()) && find(blockades.begin(), blockades.end(), blockade) != blockades.end();
+}
+
+void Client::add_blockade(Card::Blockade blockade) {
+    blockades.push_back(blockade);
+}
+
 void Client::close_connection() {
     cout << "closing connection..." << endl;
     pollfd_mutex.lock();

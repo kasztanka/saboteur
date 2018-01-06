@@ -27,3 +27,14 @@ void TunnelCard::rotate() {
     directions[LEFT] = directions[RIGHT];
     directions[RIGHT] = tmp;
 }
+
+
+BlockCard::BlockCard(string name, int type) : Card(name, type) {
+    if (name.find("LAMP") != string::npos) {
+        blockade = Card::LAMP;
+    } else if (name.find("PICKAXE") != string::npos) {
+        blockade = Card::PICKAXE;
+    } else {
+        blockade = Card::TRUCK;
+    }
+}

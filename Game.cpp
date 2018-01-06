@@ -23,6 +23,8 @@ void Game::add_card_to_deck(string name, int quantity, int card_type) {
                 pile_of_cards.push_back(new TunnelCard(name, Card::TUNNEL));
             break;
         case Card::BLOCK:
+            for (int i = 0; i < quantity; i++)
+                pile_of_cards.push_back(new BlockCard(name, Card::BLOCK));
             break;
         case Card::HEAL:
             break;
@@ -48,6 +50,9 @@ void Game::prepare_deck() {
     add_card_to_deck("URM", 5, Card::TUNNEL);
     add_card_to_deck("UDM", 2, Card::TUNNEL);
     add_card_to_deck("DLM", 3, Card::TUNNEL);
+    add_card_to_deck("LAMP", 4, Card::BLOCK);
+    add_card_to_deck("PICKAXE", 4, Card::BLOCK);
+    add_card_to_deck("TRUCK", 4, Card::BLOCK);
     random_device rd;
     mt19937 g(rd());
     shuffle(pile_of_cards.begin(), pile_of_cards.end(), g);
@@ -91,6 +96,17 @@ void Game::play_tunnel_card(TunnelCard * new_card, int x, int y, bool is_rotated
     if (game_board->validate_tunnel_card(new_card, x, y)) {
         game_board->set_card(new_card, x, y);
         activate_next();
+    } else {
+        throw IncorrectMoveException();
+    }
+}
+
+string Game::play_block_card(BlockCard * card, int player_index) {
+    Client * blocked_player = players[player_index];
+    if (!blocked_player->has_blockade(card->blockade)) {
+        blocked_player->add_blockade(card->blockade);
+        activate_next();
+        return blocked_player->username;
     } else {
         throw IncorrectMoveException();
     }

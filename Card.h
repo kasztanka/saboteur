@@ -18,6 +18,15 @@ public:
         HEAL = 2,
         GOAL = 3
     };
+
+    enum Blockade {
+        LAMP = 1,
+        PICKAXE,
+        TRUCK,
+        LAMP_PICKAXE,
+        LAMP_TRUCK,
+        PICKAXE_TRUCK,
+    };
 };
 
 class TunnelCard: public Card {
@@ -38,6 +47,12 @@ class GoalCard: public TunnelCard {
 public:
     bool is_gold;
     explicit GoalCard(string, int);
+};
+
+class BlockCard: public Card {
+public:
+    Card::Blockade blockade;
+    explicit BlockCard(string, int);
 };
 
 
