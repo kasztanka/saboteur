@@ -59,11 +59,26 @@ void Game::prepare_deck() {
 }
 
 void Game::prepare_board() {
-    //TODO: Add randomness to initializing goal cards
+    gold_card_row = 2;
+    coal_card1_row = 0;
+    coal_card2_row = 4;
+    goal_cards_col = game_board->COLS - 1;
     game_board->set_card(new TunnelCard("UDLRM_start", Card::TUNNEL), 0, 2);
-    game_board->set_card(new GoalCard("UDLRM_gold", Card::GOAL), game_board->COLS - 1, 0);
-    game_board->set_card(new GoalCard("ULM_coal", Card::GOAL), game_board->COLS - 1, 2);
-    game_board->set_card(new GoalCard("URM_coal", Card::GOAL), game_board->COLS - 1, 4);
+    game_board->set_card(
+        new GoalCard("UDLRM_gold", Card::GOAL),
+        goal_cards_col,
+        gold_card_row
+    );
+    game_board->set_card(
+        new GoalCard("ULM_coal", Card::GOAL),
+        goal_cards_col,
+        coal_card1_row
+    );
+    game_board->set_card(
+        new GoalCard("URM_coal", Card::GOAL),
+        goal_cards_col,
+        coal_card2_row
+    );
 }
 
 void Game::activate_first() {
@@ -110,4 +125,10 @@ string Game::play_block_card(BlockCard * card, int player_index) {
     } else {
         throw IncorrectMoveException();
     }
+}
+
+bool Game::is_finished() {
+    //TODO: Check if saboteurs won
+    //return game_board->card_has_connection_to_root(goal_cards_col, gold_card_row);
+    return false;
 }
