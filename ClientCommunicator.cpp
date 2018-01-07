@@ -194,7 +194,7 @@ void ClientCommunicator::join_room() {
         game->players.push_back(client);
         send_players(game);
         send_new_player_to_others(game);
-        if (game->players.size() == game->room_size) {
+        if (game->players.size() == game->ROOM_SIZE) {
             start_game(game);
         }
     }
@@ -204,11 +204,30 @@ void ClientCommunicator::start_game(Game * game) {
     send_int_to_all(game->players, ClientCommunicator::START_GAME);
     game->activate_first();
     send_player_activation(game);
-    for (auto &player: game->players) {
+    int * roles = choose_roles_for_players(game->ROOM_SIZE, game->NUM_OF_SABOTEURS);
+    for (int k = 0; k < game->players.size(); k++) {
+        auto player = game->players[k];
+        if (roles[k] == 1)
+            send_role_to_player(player, "Sabotazysta");
+        else if (roles[k] == 0)
+            send_role_to_player(player, "Dobry krasnal");
         for (int i = 0; i < 5; i++) {
             send_card_to_player(player, game);
         }
     }
+    delete roles;
+}
+
+int * ClientCommunicator::choose_roles_for_players(int all_dwarfs_num, int saboteurs_num) {
+    int * roles = new int[all_dwarfs_num];
+    for (int i = 0; i < all_dwarfs_num; i++) {
+        if (i < saboteurs_num)
+            roles[i] = 1;
+        else
+            roles[i] = 0;
+    }
+    random_shuffle(&roles[0], &roles[all_dwarfs_num - 1]);
+    return roles;
 }
 
 void ClientCommunicator::send_card_to_player(Client * player, Game * game) {
@@ -246,6 +265,11 @@ void ClientCommunicator::send_games() {
     for (auto &game: *games) {
         send_text(client, game->name, game->name.size());
     }
+}
+
+void ClientCommunicator::send_role_to_player(Client * client, string role) {
+    send_int(client, ClientCommunicator::SET_ROLE);
+    send_text(client, role, role.size());
 }
 
 bool ClientCommunicator::username_repeated(Game *game, string username) {

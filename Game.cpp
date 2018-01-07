@@ -4,7 +4,6 @@
 
 Game::Game(string name) {
     this->name = name;
-    this->room_size = 2;
     this->game_board = new Board();
     prepare_deck();
     prepare_board();

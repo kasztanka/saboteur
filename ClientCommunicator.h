@@ -1,12 +1,13 @@
 #ifndef SABOTEUR_SERVER_CLIENTCOMMUNICATOR_H
 #define SABOTEUR_SERVER_CLIENTCOMMUNICATOR_H
 
-#include<iostream>
+#include <iostream>
 #include <cstring>
 #include <unistd.h>
 #include <exception>
 #include <arpa/inet.h>
-#include<vector>
+#include <vector>
+#include <algorithm>
 #include "Client.h"
 
 
@@ -33,6 +34,7 @@ public:
         REMOVE_CARD_FROM_HAND,
         BLOCK,
         HEAL,
+        SET_ROLE,
         CLOSE_CONNECTION,
     };
 
@@ -51,10 +53,12 @@ private:
     void create_room();
     void join_room();
     void start_game(Game *);
+    int * choose_roles_for_players(int, int);
     void send_card_to_player(Client *, Game *);
     void receive_username();
     void send_players(Game *);
     void send_new_player_to_others(Game *);
+    void send_role_to_player(Client *, string);
     void send_games();
     bool username_repeated(Game *, string);
     void send_error_message(Client *, string);
