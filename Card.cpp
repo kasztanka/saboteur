@@ -4,10 +4,10 @@
 Card::Card(string name, int type) {
     this->name = name;
     this->type = type;
-    is_root = (name.find("start") != string::npos);
 }
 
 TunnelCard::TunnelCard(string name, int type) : Card(name, type) {
+    is_root = (name.find("start") != string::npos);
     directions[UP] = (name.find('U') != string::npos);
     directions[DOWN] = (name.find('D') != string::npos);
     directions[LEFT] = (name.find('L') != string::npos);
