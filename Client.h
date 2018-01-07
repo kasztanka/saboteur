@@ -31,6 +31,7 @@ public:
     bool has_blockade(Card::Blockade);
     void add_blockade(Card::Blockade);
     int remove_blockades(vector<Card::Blockade>);
+    bool is_blocked();
     void close_connection();
 };
 

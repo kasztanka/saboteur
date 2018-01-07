@@ -49,6 +49,10 @@ int Client::remove_blockades(vector<Card::Blockade> heals) {
     return healed_blockades;
 }
 
+bool Client::is_blocked() {
+    return !blockades.empty();
+}
+
 void Client::close_connection() {
     cout << "closing connection..." << endl;
     pollfd_mutex.lock();

@@ -289,6 +289,8 @@ void ClientCommunicator::handle_card_to_board() {
     Game * game = client->game;
     if (!game->is_active_player(client)) {
         send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
+    } else if (client->is_blocked()) {
+        send_error_message(client, "Jestes zablokowany. Nie mozesz klasc kart na mapie");
     } else {
         try {
             TunnelCard * card = (TunnelCard *)client->getCardByIndex(card_index);
