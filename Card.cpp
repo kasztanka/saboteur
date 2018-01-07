@@ -29,12 +29,32 @@ void TunnelCard::rotate() {
 }
 
 
-BlockCard::BlockCard(string name, int type) : Card(name, type) {
-    if (name.find("LAMP") != string::npos) {
+ActionCard::ActionCard(string name, int type) : Card(name, type) {
+    if (name.find("LAMP_PICKAXE") != string::npos) {
+        blockade = Card::LAMP_PICKAXE;
+    } else if (name.find("LAMP_TRUCK") != string::npos) {
+        blockade = Card::LAMP_TRUCK;
+    } else if (name.find("PICKAXE_TRUCK") != string::npos) {
+        blockade = Card::PICKAXE_TRUCK;
+    } else if (name.find("LAMP") != string::npos) {
         blockade = Card::LAMP;
     } else if (name.find("PICKAXE") != string::npos) {
         blockade = Card::PICKAXE;
     } else {
         blockade = Card::TRUCK;
+    }
+}
+
+BlockCard::BlockCard(string name, int type) : ActionCard(name, type) {}
+
+HealCard::HealCard(string name, int type) : ActionCard(name, type) {
+    if (name.find("LAMP") != string::npos) {
+        blockades.push_back(Card::LAMP);
+    }
+    if (name.find("PICKAXE") != string::npos) {
+        blockades.push_back(Card::PICKAXE);
+    }
+    if (name.find("TRUCK") != string::npos) {
+        blockades.push_back(Card::TRUCK);
     }
 }

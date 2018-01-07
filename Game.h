@@ -1,7 +1,6 @@
 #ifndef SABOTEUR_SERVER_GAME_H
 #define SABOTEUR_SERVER_GAME_H
 
-#include <vector>
 #include <algorithm>
 #include <random>
 #include "Card.h"
@@ -42,6 +41,7 @@ public:
     bool has_empty_pile();
     void play_tunnel_card(TunnelCard *, int, int, bool);
     string play_block_card(BlockCard *, int);
+    string play_heal_card(HealCard *, int);
     bool is_finished();
 };
 

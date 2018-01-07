@@ -2,6 +2,7 @@
 #define SABOTEUR_SERVER_CARD_H
 
 #include<string>
+#include <vector>
 using namespace std;
 
 
@@ -49,10 +50,21 @@ public:
     explicit GoalCard(string, int);
 };
 
-class BlockCard: public Card {
+class ActionCard: public Card {
 public:
     Card::Blockade blockade;
+    explicit ActionCard(string, int);
+};
+
+class BlockCard: public ActionCard {
+public:
     explicit BlockCard(string, int);
+};
+
+class HealCard: public ActionCard {
+public:
+    vector<Card::Blockade> blockades;
+    explicit HealCard(string, int);
 };
 
 

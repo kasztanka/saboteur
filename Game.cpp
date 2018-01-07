@@ -27,6 +27,8 @@ void Game::add_card_to_deck(string name, int quantity, int card_type) {
                 pile_of_cards.push_back(new BlockCard(name, Card::BLOCK));
             break;
         case Card::HEAL:
+            for (int i = 0; i < quantity; i++)
+                pile_of_cards.push_back(new HealCard(name, Card::HEAL));
             break;
     }
 }
@@ -50,9 +52,15 @@ void Game::prepare_deck() {
     add_card_to_deck("URM", 5, Card::TUNNEL);
     add_card_to_deck("UDM", 2, Card::TUNNEL);
     add_card_to_deck("DLM", 3, Card::TUNNEL);
-    add_card_to_deck("LAMP", 4, Card::BLOCK);
-    add_card_to_deck("PICKAXE", 4, Card::BLOCK);
-    add_card_to_deck("TRUCK", 4, Card::BLOCK);
+    add_card_to_deck("LAMP", 3, Card::BLOCK);
+    add_card_to_deck("PICKAXE", 3, Card::BLOCK);
+    add_card_to_deck("TRUCK", 3, Card::BLOCK);
+    add_card_to_deck("LAMP", 2, Card::HEAL);
+    add_card_to_deck("PICKAXE", 2, Card::HEAL);
+    add_card_to_deck("TRUCK", 2, Card::HEAL);
+    add_card_to_deck("LAMP_PICKAXE", 1, Card::HEAL);
+    add_card_to_deck("LAMP_TRUCK", 1, Card::HEAL);
+    add_card_to_deck("PICKAXE_TRUCK", 1, Card::HEAL);
     random_device rd;
     mt19937 g(rd());
     shuffle(pile_of_cards.begin(), pile_of_cards.end(), g);
@@ -120,6 +128,16 @@ string Game::play_block_card(BlockCard * card, int player_index) {
     Client * blocked_player = players[player_index];
     if (!blocked_player->has_blockade(card->blockade)) {
         blocked_player->add_blockade(card->blockade);
+        activate_next();
+        return blocked_player->username;
+    } else {
+        throw IncorrectMoveException();
+    }
+}
+
+string Game::play_heal_card(HealCard * card, int player_index) {
+    Client * blocked_player = players[player_index];
+    if (blocked_player->remove_blockades(card->blockades) != 0) {
         activate_next();
         return blocked_player->username;
     } else {

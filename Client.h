@@ -24,12 +24,13 @@ public:
     bool active;
     string username;
     Game * game;
-    Client(pollfd * client_fd);
+    explicit Client(pollfd * client_fd);
     void addCard(Card *);
     Card * getCardByIndex(int);
     void removeCardByIndex(int);
     bool has_blockade(Card::Blockade);
     void add_blockade(Card::Blockade);
+    int remove_blockades(vector<Card::Blockade>);
     void close_connection();
 };
 

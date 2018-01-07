@@ -334,7 +334,7 @@ void ClientCommunicator::handle_block_card() {
         try {
             BlockCard * card = (BlockCard *)client->getCardByIndex(card_index);
             string player_name = game->play_block_card(card, player_index);
-            send_block_card(game->players, card, player_name);
+            send_action_card(ClientCommunicator::BLOCK, game->players, card, player_name);
             client->removeCardByIndex(card_index);
             send_used_card(card_index);
             send_player_activation(game);
@@ -347,13 +347,32 @@ void ClientCommunicator::handle_block_card() {
 }
 
 
-void ClientCommunicator::send_block_card(vector<Client *> players, BlockCard * card, string player_name) {
-    send_int_to_all(players, ClientCommunicator::BLOCK);
+void ClientCommunicator::send_action_card(ClientCommunicator::MessageCode messageCode, vector<Client *> players,
+      ActionCard * card, string player_name) {
+    send_int_to_all(players, messageCode);
     send_int_to_all(players, card->blockade);
     send_text_to_all(players, player_name, player_name.size());
 }
 
 
 void ClientCommunicator::handle_heal_card() {
-
+    int card_index = receive_int(client);
+    int player_index = receive_int(client);
+    Game * game = client->game;
+    if (!game->is_active_player(client)) {
+        send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
+    } else {
+        try {
+            HealCard * card = (HealCard *)client->getCardByIndex(card_index);
+            string player_name = game->play_heal_card(card, player_index);
+            send_action_card(ClientCommunicator::HEAL, game->players, card, player_name);
+            client->removeCardByIndex(card_index);
+            send_used_card(card_index);
+            send_player_activation(game);
+        } catch (NoCardException &e) {
+            send_error_message(client, "Nie masz takiej karty");
+        } catch (IncorrectMoveException & e) {
+            send_error_message(client, "Niepoprawny ruch. Sprobuj ponownie");
+        }
+    }
 }

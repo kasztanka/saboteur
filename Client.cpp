@@ -32,6 +32,23 @@ void Client::add_blockade(Card::Blockade blockade) {
     blockades.push_back(blockade);
 }
 
+int Client::remove_blockades(vector<Card::Blockade> heals) {
+    if (blockades.size() == 0) {
+        return 0;
+    }
+    int healed_blockades = 0;
+    for (auto &heal: heals) {
+        for (int i = 0; i < blockades.size(); i++) {
+            if (blockades.at(i) == heal) {
+                blockades.erase(blockades.begin() + i);
+                healed_blockades += 1;
+                break;
+            }
+        }
+    }
+    return healed_blockades;
+}
+
 void Client::close_connection() {
     cout << "closing connection..." << endl;
     pollfd_mutex.lock();
