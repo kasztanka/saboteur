@@ -16,6 +16,21 @@ class Client;
 
 
 class Game {
+public:
+    vector<Client *> players;
+    int room_size;
+    string name;
+    explicit Game(string);
+    Card * draw_card();
+    void activate_first();
+    void activate_next();
+    string get_active_player_username();
+    bool is_active_player(Client *);
+    bool has_empty_pile();
+    void play_tunnel_card(TunnelCard *, int, int, bool);
+    string play_block_card(BlockCard *, int);
+    string play_heal_card(HealCard *, int);
+    bool is_finished();
 private:
     vector<Card *> pile_of_cards;
     Client * active_player;
@@ -28,21 +43,6 @@ private:
     void prepare_deck();
     void prepare_board();
     void add_card_to_deck(string, int, int);
-public:
-    vector<Client *> players;
-    int room_size;
-    string name;
-    explicit Game(string);
-    Card * draw_card();
-    void activate_first();
-    void activate_next();
-    string get_active_player_username();
-    bool is_active_player(Client * client);
-    bool has_empty_pile();
-    void play_tunnel_card(TunnelCard *, int, int, bool);
-    string play_block_card(BlockCard *, int);
-    string play_heal_card(HealCard *, int);
-    bool is_finished();
 };
 
 

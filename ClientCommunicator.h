@@ -36,16 +36,16 @@ public:
         CLOSE_CONNECTION,
     };
 
-    explicit ClientCommunicator(Client *, vector<Game *> * games);
+    explicit ClientCommunicator(Client *, vector<Game *> *);
     void handle_client_message();
 private:
-    int receive_int(Client * client);
-    string receive_text(Client * client);
-    void send_buffer(Client * client, char * buffer, int length);
-    void send_int(Client * client, int number);
-    void send_text(Client * client, string text, int length);
-    void send_int_to_all(vector <Client *> recipients, int number);
-    void send_text_to_all(vector <Client *> recipients, string text, int length);
+    int receive_int(Client *);
+    string receive_text(Client *);
+    void send_buffer(Client *, char *, int);
+    void send_int(Client *, int);
+    void send_text(Client *, string, int);
+    void send_int_to_all(vector <Client *>, int);
+    void send_text_to_all(vector <Client *>, string, int);
     void handle_chat_message();
     void send_chat_message(string);
     void create_room();
@@ -53,12 +53,12 @@ private:
     void start_game(Game *);
     void send_card_to_player(Client *, Game *);
     void receive_username();
-    void send_players(Game * game);
-    void send_new_player_to_others(Game * game);
+    void send_players(Game *);
+    void send_new_player_to_others(Game *);
     void send_games();
-    bool username_repeated(Game * game, string username);
-    void send_error_message(Client * client, string error_message);
-    void send_player_activation(Game * game);
+    bool username_repeated(Game *, string);
+    void send_error_message(Client *, string);
+    void send_player_activation(Game *);
     void send_card_to_hand();
     void handle_card_to_board();
     void send_board_card(vector<Client *>, Card *, int, int, bool);

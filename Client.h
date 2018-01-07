@@ -15,24 +15,24 @@ struct NoCardException : public exception {};
 
 
 class Client {
-private:
-    vector<Card *> hand_cards;
-    vector<Card::Blockade> blockades;
 public:
     pollfd * client_fd;
     mutex pollfd_mutex;
     bool active;
     string username;
     Game * game;
-    explicit Client(pollfd * client_fd);
-    void addCard(Card *);
-    Card * getCardByIndex(int);
-    void removeCardByIndex(int);
+    explicit Client(pollfd *);
+    void add_card(Card *);
+    Card * get_card_by_index(int);
+    void remove_card_by_index(int);
     bool has_blockade(Card::Blockade);
     void add_blockade(Card::Blockade);
     int remove_blockades(vector<Card::Blockade>);
     bool is_blocked();
     void close_connection();
+private:
+    vector<Card *> hand_cards;
+    vector<Card::Blockade> blockades;
 };
 
 

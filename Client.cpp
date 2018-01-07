@@ -6,18 +6,18 @@ Client::Client(pollfd * client_fd) {
     this->active = true;
 }
 
-void Client::addCard(Card * new_card) {
+void Client::add_card(Card * new_card) {
     hand_cards.push_back(new_card);
 }
 
-Card * Client::getCardByIndex(int card_index) {
+Card * Client::get_card_by_index(int card_index) {
     if (hand_cards.size() <= card_index) {
         throw NoCardException();
     }
     return hand_cards.at(card_index);
 }
 
-void Client::removeCardByIndex(int card_index) {
+void Client::remove_card_by_index(int card_index) {
     if (hand_cards.size() <= card_index) {
         throw NoCardException();
     }

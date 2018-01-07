@@ -10,7 +10,6 @@ class Card {
 public:
     string name;
     int type;
-    bool is_root;
     explicit Card(string, int);
 
     enum CardType {
@@ -40,6 +39,7 @@ public:
         MID,
     };
     bool directions[5];
+    bool is_root;
     explicit TunnelCard(string, int);
     void rotate();
 };

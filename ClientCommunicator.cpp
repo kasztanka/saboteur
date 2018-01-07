@@ -216,7 +216,7 @@ void ClientCommunicator::send_card_to_player(Client * player, Game * game) {
     Card * card = game->draw_card();
     send_int(player, card->type);
     send_text(player, card->name, card->name.size());
-    player->addCard(card);
+    player->add_card(card);
 }
 
 void ClientCommunicator::receive_username() {
@@ -293,9 +293,9 @@ void ClientCommunicator::handle_card_to_board() {
         send_error_message(client, "Jestes zablokowany. Nie mozesz klasc kart na mapie");
     } else {
         try {
-            TunnelCard * card = (TunnelCard *)client->getCardByIndex(card_index);
+            TunnelCard * card = (TunnelCard *) client->get_card_by_index(card_index);
             game->play_tunnel_card(card, x, y, is_rotated);
-            client->removeCardByIndex(card_index);
+            client->remove_card_by_index(card_index);
             send_board_card(game->players, card, x, y, is_rotated);
             send_used_card(card_index);
             send_player_activation(game);
@@ -334,10 +334,10 @@ void ClientCommunicator::handle_block_card() {
         send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
     } else {
         try {
-            BlockCard * card = (BlockCard *)client->getCardByIndex(card_index);
+            BlockCard * card = (BlockCard *) client->get_card_by_index(card_index);
             string player_name = game->play_block_card(card, player_index);
             send_action_card(ClientCommunicator::BLOCK, game->players, card, player_name);
-            client->removeCardByIndex(card_index);
+            client->remove_card_by_index(card_index);
             send_used_card(card_index);
             send_player_activation(game);
         } catch (NoCardException &e) {
@@ -365,10 +365,10 @@ void ClientCommunicator::handle_heal_card() {
         send_error_message(client, "Nie jestes aktywnym graczem. Opanuj sie!");
     } else {
         try {
-            HealCard * card = (HealCard *)client->getCardByIndex(card_index);
+            HealCard * card = (HealCard *) client->get_card_by_index(card_index);
             string player_name = game->play_heal_card(card, player_index);
             send_action_card(ClientCommunicator::HEAL, game->players, card, player_name);
-            client->removeCardByIndex(card_index);
+            client->remove_card_by_index(card_index);
             send_used_card(card_index);
             send_player_activation(game);
         } catch (NoCardException &e) {
