@@ -1,28 +1,20 @@
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <netdb.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <pthread.h>
 #include<string>
 #include<iostream>
-#include <sys/ioctl.h>
 #include <sys/poll.h>
-#include <sys/time.h>
-#include <errno.h>
 #include <vector>
 #include "Client.h"
 #include "ClientCommunicator.h"
 
 using namespace std;
 
-#define SERVER_PORT 42010
 #define POLL_TIMEOUT 500
 #define MAX_FDS 200
 #define LISTEN_QUEUE_SIZE 32
@@ -54,18 +46,19 @@ Client * clients[MAX_FDS];
 vector<Game *> games;
 
 int main(int argc, char *argv[]) {
-    short server_port = SERVER_PORT;
-    if (argc > 1) {
-        char *p;
-        long int conv = strtol(argv[1], &p, 10);
-        if (*p == 0 && (unsigned short)conv == conv) {
-            server_port = (short)conv;
-        }
-        else {
-            fprintf(stderr, "Invalid argument: %s\n", argv[1]);
-            exit(1);
-        }
+    char key[21];
+    int value, SERVER_PORT, ROOM_SIZE;
+    FILE * config_file = fopen("config.ini", "r");
+    while (feof(config_file) == 0) {
+        fscanf(config_file, "%s = %d", key, &value);
+        key[21] = '\0';
+        if (strcmp(key, "port") == 0)
+            SERVER_PORT = value;
+        else if (strcmp(key, "room_size") == 0)
+            ROOM_SIZE = value;
     }
+    fclose(config_file);
+    cout << "Room size: " << ROOM_SIZE << endl << "Server port: " << SERVER_PORT << endl;
 
     int listen_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (listen_desc < 0) {
@@ -84,7 +77,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in addr = {};
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(server_port);
+    addr.sin_port = htons(SERVER_PORT);
     rc = bind(listen_desc, (struct sockaddr*)&addr, sizeof(addr));
     if (rc < 0) {
         perror("bind() failed");
@@ -103,8 +96,6 @@ int main(int argc, char *argv[]) {
     fds[0].events = POLLIN;
 
     while (true) {
-
-
         rc = poll(fds, nfds, POLL_TIMEOUT);
 
         if (rc < 0) {
