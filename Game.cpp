@@ -2,6 +2,8 @@
 #include "Client.h"
 
 
+int Game::ROOM_SIZE;
+
 Game::Game(string name) {
     this->name = name;
     this->game_board = new Board();

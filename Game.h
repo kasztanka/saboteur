@@ -18,7 +18,7 @@ class Client;
 class Game {
 public:
     vector<Client *> players;
-    const int ROOM_SIZE = 2;
+    static int ROOM_SIZE;
     const int NUM_OF_SABOTEURS = 1;
     string name;
     explicit Game(string);

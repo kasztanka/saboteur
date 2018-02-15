@@ -47,18 +47,26 @@ vector<Game *> games;
 
 int main(int argc, char *argv[]) {
     char key[21];
-    int value, SERVER_PORT, ROOM_SIZE;
+    int value, SERVER_PORT, config_found = 0;
     FILE * config_file = fopen("config.ini", "r");
     while (feof(config_file) == 0) {
         fscanf(config_file, "%s = %d", key, &value);
         key[21] = '\0';
-        if (strcmp(key, "port") == 0)
+        if (strcmp(key, "port") == 0) {
             SERVER_PORT = value;
-        else if (strcmp(key, "room_size") == 0)
-            ROOM_SIZE = value;
+            config_found += 1;
+        }
+        else if (strcmp(key, "room_size") == 0) {
+            Game::ROOM_SIZE = value;
+            config_found += 1;
+        }
+    }
+    if (config_found != 2) {
+        cout << "Server port and room size should be in config file." << endl;
+        exit(4);
     }
     fclose(config_file);
-    cout << "Room size: " << ROOM_SIZE << endl << "Server port: " << SERVER_PORT << endl;
+    cout << "Room size: " << Game::ROOM_SIZE << endl << "Server port: " << SERVER_PORT << endl;
 
     int listen_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (listen_desc < 0) {
