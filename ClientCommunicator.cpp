@@ -324,7 +324,7 @@ void ClientCommunicator::handle_card_to_board() {
             send_used_card(card_index);
             send_player_activation(game);
             if (client->game->is_finished()) {
-                send_chat_message("KONIEC GRY");
+                close_game(client->game, "Dobre krasnale wygraly! Koniec gry");
             }
         } catch (NoCardException &e) {
             send_error_message(client, "Nie masz takiej karty");

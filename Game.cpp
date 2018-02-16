@@ -147,7 +147,6 @@ string Game::play_heal_card(HealCard * card, int player_index) {
 }
 
 bool Game::is_finished() {
-    //TODO: Check if saboteurs won
-    //return game_board->card_has_connection_to_root(goal_cards_col, gold_card_row);
-    return false;
+    TunnelCard * gold_card = game_board->get_card(goal_cards_col, gold_card_row);
+    return game_board->card_has_connection_to_root(gold_card, goal_cards_col, gold_card_row);
 }
