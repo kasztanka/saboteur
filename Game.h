@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <random>
+#include <mutex>
 #include "Card.h"
 #include "Board.h"
 
@@ -21,6 +22,7 @@ public:
     static int ROOM_SIZE;
     const int NUM_OF_SABOTEURS = 1;
     string name;
+    mutex player_mutex;
     explicit Game(string);
     Card * draw_card();
     void activate_first();

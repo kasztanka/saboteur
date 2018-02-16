@@ -63,3 +63,9 @@ void Client::close_connection() {
     }
     pollfd_mutex.unlock();
 }
+
+void Client::leave_game() {
+    game->player_mutex.lock();
+    game->players.erase(remove(game->players.begin(), game->players.end(), this), game->players.end());
+    game->player_mutex.unlock();
+}

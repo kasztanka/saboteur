@@ -36,10 +36,12 @@ public:
         HEAL,
         SET_ROLE,
         CLOSE_CONNECTION,
+        END_GAME,
     };
 
     explicit ClientCommunicator(Client *, vector<Game *> *);
     void handle_client_message();
+    void close_connection_and_game(Client *);
 private:
     int receive_int(Client *);
     string receive_text(Client *);
@@ -70,6 +72,7 @@ private:
     void handle_block_card();
     void send_action_card(ClientCommunicator::MessageCode, vector<Client *>, ActionCard *, string);
     void handle_heal_card();
+    void close_game(Game *, string);
 };
 
 

@@ -45,11 +45,11 @@ void ClientCommunicator::handle_client_message() {
     } catch (ConnectionClosedException &e) {
         close_conn = true;
     } catch (ConnectionBrokenException &e) {
-        cout << "read() failed" << endl;
+        cout << "read() or write() failed" << endl;
         close_conn = true;
     }
     if (close_conn)
-        client->close_connection();
+        close_connection_and_game(client);
 }
 
 int ClientCommunicator::receive_int(Client * client) {
@@ -136,11 +136,11 @@ void ClientCommunicator::send_int_to_all(vector <Client *> recipients, int numbe
         } catch (ConnectionClosedException &e) {
             close_conn = true;
         } catch (ConnectionBrokenException &e) {
-            cout << "read() failed" << endl;
+            cout << "write() failed" << endl;
             close_conn = true;
         }
         if (close_conn)
-            recipient->close_connection();
+            close_connection_and_game(recipient);
     }
 }
 
@@ -153,11 +153,11 @@ void ClientCommunicator::send_text_to_all(vector <Client *> recipients, string t
         } catch (ConnectionClosedException &e) {
             close_conn = true;
         } catch (ConnectionBrokenException &e) {
-            cout << "read() failed" << endl;
+            cout << "write() failed" << endl;
             close_conn = true;
         }
         if (close_conn)
-            recipient->close_connection();
+            close_connection_and_game(recipient);
     }
 }
 
@@ -401,4 +401,37 @@ void ClientCommunicator::handle_heal_card() {
             send_error_message(client, "Niepoprawny ruch. Sprobuj ponownie");
         }
     }
+}
+
+
+void ClientCommunicator::close_connection_and_game(Client * client) {
+    client->close_connection();
+    if (client->game != nullptr) {
+        client->leave_game();
+        close_game(client->game, client->username + " opuscil gre. Koniec gry!");
+        client->game = nullptr;
+    }
+}
+
+
+void ClientCommunicator::close_game(Game * game, string message) {
+    bool close_conn;
+    for (auto &player: game->players) {
+        close_conn = false;
+        try {
+            send_int(player, ClientCommunicator::END_GAME);
+            send_text(player, message, message.size());
+            send_int(player, ClientCommunicator::CLOSE_CONNECTION);
+        } catch (ConnectionClosedException &e) {
+            close_conn = true;
+        } catch (ConnectionBrokenException &e) {
+            cout << "write() failed" << endl;
+            close_conn = true;
+        }
+        if (close_conn) {
+            player->close_connection();
+        }
+        player->game = nullptr;
+    }
+    games->erase(remove(games->begin(), games->end(), game), games->end());
 }

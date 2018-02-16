@@ -135,7 +135,8 @@ int main(int argc, char *argv[]) {
         for (int i = 1; i < nfds; i++) {
             if (fds[i].revents & POLLERR) {
                 cout << "socket error" << endl;
-                clients[i]->close_connection();
+                ClientCommunicator * clientCommunicator = new ClientCommunicator(clients[i], &games);
+                clientCommunicator->close_connection_and_game(clients[i]);
             }
             else if (fds[i].revents & POLLIN) {
                 client_t_data t_data = {};

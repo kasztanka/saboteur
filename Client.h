@@ -30,6 +30,7 @@ public:
     int remove_blockades(vector<Card::Blockade>);
     bool is_blocked();
     void close_connection();
+    void leave_game();
 private:
     vector<Card *> hand_cards;
     vector<Card::Blockade> blockades;
