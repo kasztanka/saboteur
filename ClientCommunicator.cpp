@@ -290,8 +290,13 @@ void ClientCommunicator::send_error_message(Client * client, string error_messag
 
 void ClientCommunicator::send_player_activation(Game * game) {
     send_int_to_all(game->players, ClientCommunicator::ACTIVATE_PLAYER);
-    string username = game->get_active_player_username();
+    Client * active_player = game->get_active_player();
+    string username = active_player->username;
     send_text_to_all(game->players, username, username.size());
+    if (game->has_empty_pile())
+        send_error_message(active_player, "Karty sie skonczyly");
+    else
+        send_card_to_player(active_player, game);
 }
 
 void ClientCommunicator::send_card_to_hand() {

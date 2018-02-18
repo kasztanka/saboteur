@@ -27,7 +27,7 @@ public:
     Card * draw_card();
     void activate_first();
     void activate_next();
-    string get_active_player_username();
+    Client * get_active_player();
     bool is_active_player(Client *);
     bool has_empty_pile();
     void play_tunnel_card(TunnelCard *, int, int, bool);

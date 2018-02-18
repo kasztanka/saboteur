@@ -101,8 +101,8 @@ void Game::activate_next() {
     active_player = players.at(active_player_index);
 }
 
-string Game::get_active_player_username() {
-    return active_player->username;
+Client * Game::get_active_player() {
+    return active_player;
 }
 
 bool Game::is_active_player(Client * client) {
