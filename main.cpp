@@ -59,9 +59,12 @@ int main(int argc, char *argv[]) {
         else if (strcmp(key, "room_size") == 0) {
             Game::ROOM_SIZE = value;
             config_found += 1;
+        } else if (strcmp(key, "num_of_saboteurs") == 0) {
+            Game::NUM_OF_SABOTEURS = value;
+            config_found += 1;
         }
     }
-    if (config_found != 2) {
+    if (config_found != 3) {
         cout << "Server port and room size should be in config file." << endl;
         exit(4);
     }

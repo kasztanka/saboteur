@@ -20,7 +20,7 @@ class Game {
 public:
     vector<Client *> players;
     static int ROOM_SIZE;
-    const int NUM_OF_SABOTEURS = 1;
+    static int NUM_OF_SABOTEURS;
     string name;
     mutex player_mutex;
     explicit Game(string);

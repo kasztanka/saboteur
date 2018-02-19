@@ -3,6 +3,7 @@
 
 
 int Game::ROOM_SIZE;
+int Game::NUM_OF_SABOTEURS;
 
 Game::Game(string name) {
     this->name = name;
